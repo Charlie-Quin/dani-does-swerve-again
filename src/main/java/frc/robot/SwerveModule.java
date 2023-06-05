@@ -11,6 +11,12 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.tools.PIDValues;
+import frc.robot.tools.RobotMap;
+
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.CANCoderStatusFrame;
+import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 public class SwerveModule {
     
@@ -20,7 +26,7 @@ public class SwerveModule {
     final RelativeEncoder turnEncoder;
     private final RelativeEncoder driveEncoder;
 
-    private final AnalogInput absoluteEncoder;
+    private final CANCoder absoluteEncoder;
 
    
 
@@ -37,9 +43,15 @@ public class SwerveModule {
     boolean backWards = false;
 
     public SwerveModule(int drivePort,int turnPort,int encoderPort,PIDValues turnGains, PIDValues driveGains,double encoderOffset, String name){
-        driveMotor = new CANSparkMax(drivePort,MotorType.kBrushless);
+        driveMotor = new CANSparkMax( drivePort,MotorType.kBrushless);
         turnMotor = new CANSparkMax(turnPort,MotorType.kBrushless);
-        absoluteEncoder = new AnalogInput(encoderPort);
+
+        absoluteEncoder = new CANCoder(encoderPort, RobotMap.kDriveCANBusName);
+		absoluteEncoder.configFactoryDefault();
+		absoluteEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+		absoluteEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+		absoluteEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 10, 100);
+		absoluteEncoder.clearStickyFaults();
         
         driveMotor.restoreFactoryDefaults();
         turnMotor.restoreFactoryDefaults();
@@ -49,11 +61,10 @@ public class SwerveModule {
         
         turnEncoder = turnMotor.getEncoder();
         turnEncoder.setPosition(startingRotation);
-        turnEncoder.setPositionConversionFactor((2*Math.PI)/18);
+        turnEncoder.setPositionConversionFactor((2*Math.PI)/(150/7));
 
         driveEncoder = driveMotor.getEncoder();
         driveEncoder.setPosition(0);
-        driveEncoder.setPositionConversionFactor((2*Math.PI)/18);
 
         driveController = driveMotor.getPIDController();
         
@@ -135,18 +146,16 @@ public class SwerveModule {
     }
 
     public double readAngle() {
-        double angle = (1.0 - absoluteEncoder.getVoltage() / RobotController.getVoltage5V()) * 2.0 * Math.PI;
-        angle %= 2.0 * Math.PI;
-        if (angle < 0.0) {
-            angle += 2.0 * Math.PI;
-        }
+        
+        double angle = absoluteEncoder.getAbsolutePosition();
 
-        return angle;
+        return Math.toRadians(angle);
     }
 
     public void smartDash(){
         SmartDashboard.putNumber(name + " real rot", turnEncoder.getPosition());
         SmartDashboard.putNumber(name + " encoder", Math.toDegrees(readAngle()));
+        //SmartDashboard.putString("errors: ", absoluteEncoder.configFactoryDefault().name());
 
     }
 

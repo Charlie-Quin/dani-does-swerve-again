@@ -51,7 +51,6 @@ public class Robot extends TimedRobot {
     if (driveSub.deadBand(controller.getLeftTriggerAxis()) != 0)
     driveSub.backLeft.turnEncoder.setPosition(driveSub.backLeft.turnEncoder.getPosition() + controller.getLeftTriggerAxis() * 0.005);
     
-    //double direction = -Math.atan2(controller.getLeftY(),controller.getLeftX());
     
 
   }

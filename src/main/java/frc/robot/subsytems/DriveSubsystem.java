@@ -51,6 +51,12 @@ public class DriveSubsystem{// extends SubsystemBase{
       frontRight.smartDash();
       backLeft.smartDash();
       backRight.smartDash();
+
+      SmartDashboard.putString("offsets: ", 
+      "public static double kFLEncoderOffset = " + frontLeft.readAngle() + ";\n" +
+      "public static double kFREncoderOffset = " + frontRight.readAngle() + ";\n" +
+      "public static double kBLEncoderOffset = " + backLeft.readAngle() + ";\n" +
+      "public static double kBREncoderOffset = " + backRight.readAngle()+ ";" );
       
 
      }
