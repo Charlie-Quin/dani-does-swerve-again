@@ -27,10 +27,8 @@ public class RobotMap {
     // public static double kBREncoderOffset = -2.545814275741577; // good
     // public static double kBLEncoderOffset = -3.275344610214233;//2.475036426798523;this was working //4.815034538658552 - 0.198451166256656/2;
 
-    public static double kFLEncoderOffset = 3.758252930319821;
-    public static double kFREncoderOffset = 5.214000698023295;
-    public static double kBLEncoderOffset = 5.741690089055955;
-    public static double kBREncoderOffset = 4.2031073588066565;
+    public static double kFLEncoderOffset = 218.14453125;public static double kFREncoderOffset = 297.509765625;public static double kBLEncoderOffset = 327.744140625;public static double kBREncoderOffset = 240.205078125;
+    public static int kPigeonPort = 20;
 
     public static final String kDriveCANBusName = "canivore";
 

@@ -1,11 +1,20 @@
 package frc.robot.subsytems;
 
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.SwerveModule;
 import frc.robot.tools.RobotMap;
 
 public class DriveSubsystem{// extends SubsystemBase{
+
+    private final WPI_Pigeon2 gyro;
+
+    public DriveSubsystem(){
+        gyro = new WPI_Pigeon2(RobotMap.kPigeonPort, RobotMap.kDriveCANBusName);
+		gyro.setYaw(0);
+    }
 
     public final SwerveModule frontLeft = new SwerveModule(
      RobotMap.kFLDriveMotorPort,
@@ -53,12 +62,19 @@ public class DriveSubsystem{// extends SubsystemBase{
       backRight.smartDash();
 
       SmartDashboard.putString("offsets: ", 
-      "public static double kFLEncoderOffset = " + frontLeft.readAngle() + ";\n" +
-      "public static double kFREncoderOffset = " + frontRight.readAngle() + ";\n" +
-      "public static double kBLEncoderOffset = " + backLeft.readAngle() + ";\n" +
-      "public static double kBREncoderOffset = " + backRight.readAngle()+ ";" );
+      "public static double kFLEncoderOffset = " + frontLeft.directReadAngleDegrees() + ";\n" +
+      "public static double kFREncoderOffset = " + frontRight.directReadAngleDegrees() + ";\n" +
+      "public static double kBLEncoderOffset = " + backLeft.directReadAngleDegrees() + ";\n" +
+      "public static double kBREncoderOffset = " + backRight.directReadAngleDegrees()+ ";" );
       
 
+     }
+
+     public void tryReZero(){
+        frontLeft.turnEncoder.setPosition(frontLeft.readAngle());
+        frontRight.turnEncoder.setPosition(frontRight.readAngle());
+        backLeft.turnEncoder.setPosition(backLeft.readAngle());
+        backRight.turnEncoder.setPosition(backRight.readAngle());
      }
 
      public double deadBand(double num){
@@ -71,6 +87,9 @@ public class DriveSubsystem{// extends SubsystemBase{
         y = deadBand(y);
         turn = deadBand(turn);
 
+        double direction = Math.toDegrees(-Math.atan2(x,y)) - gyro.getAngle();
+        double power = Math.sqrt(x * x + y * y)/2;
+
         if (x == 0 && y == 0 && turn == 0){
             idle();
             return;
@@ -82,11 +101,13 @@ public class DriveSubsystem{// extends SubsystemBase{
         }
 
         if (turn == 0){
-            translate(x, y);
+            translate(direction, power);
             return;
         }
+        
+        
 
-        translateTurn(x,y,turn);
+        translateTurn(direction,power,turn);
      }
 
      public void idle(){
@@ -97,10 +118,12 @@ public class DriveSubsystem{// extends SubsystemBase{
      }
 
      public void turnInPlace(double power){
-        frontLeft.setTargetRotationDegrees(135.0 - 180);
-        backLeft.setTargetRotationDegrees(45.0);
-        frontRight.setTargetRotationDegrees(-45.0 - 90);
-        backRight.setTargetRotationDegrees(-135.0 - 90);
+        frontLeft.setTargetRotationDegrees(135.0 - 90);
+        backLeft.setTargetRotationDegrees(45.0 - 90);
+        frontRight.setTargetRotationDegrees(-45.0 );
+        backRight.setTargetRotationDegrees(-135.0 );
+
+        power *= -1;
 
         frontLeft.setSpeed(power);
         backLeft.setSpeed(power);
@@ -108,30 +131,17 @@ public class DriveSubsystem{// extends SubsystemBase{
         backRight.setSpeed(power);
      }
 
-     public void translate(double x , double y){
-        double direction = -Math.atan2(x,y);
-
-        double power = Math.sqrt(x * x + y * y)/2;
-
-
-        frontLeft.setTargetRotation(direction);
-        frontRight.setTargetRotation(direction);
-        backLeft.setTargetRotation(direction);
-        backRight.setTargetRotation(direction);
-
-        frontLeft.setSpeed(power);
-        frontRight.setSpeed(power);
-        backLeft.setSpeed(power);
-        backRight.setSpeed(power);
+     public void translate(double direction , double power){
+        translateTurn(direction, power, 0);
      }
 
 
-     public void translateTurn(double x, double y, double turn){
+     public void translateTurn(double direction,double power, double turn){
 
-        double direction = Math.toDegrees(-Math.atan2(x,y));
+        
         double turnAngle = turn * 45.0;
-        double power = Math.sqrt(x * x + y * y)/2;
-
+        
+        /* 
         // if the left front wheel is in the front
         if (angleDifferenceDegrees(direction, 135.0) >= 90.0)
         {
@@ -171,7 +181,13 @@ public class DriveSubsystem{// extends SubsystemBase{
         else
         {
             backRight.setTargetRotationDegrees(direction - turnAngle);
-        }
+        }*/
+
+        frontLeft.setTargetRotationDegrees(direction + turnAngle * (angleDifferenceDegrees(direction, 135.0) >= 90.0 ? -1 : 1));
+        frontRight.setTargetRotationDegrees(direction + turnAngle * (angleDifferenceDegrees(direction, 45.0) >= 90.0 ? -1 : 1));
+
+        backLeft.setTargetRotationDegrees(direction + turnAngle * (angleDifferenceDegrees(direction, 225.0) >= 90.0 ? -1 : 1));
+        backRight.setTargetRotationDegrees(direction + turnAngle * (angleDifferenceDegrees(direction, 315.0) >= 90.0 ? -1 : 1));
     
         frontLeft.setSpeed(power);
         backLeft.setSpeed(power);

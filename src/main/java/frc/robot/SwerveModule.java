@@ -4,6 +4,7 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController;
 
@@ -23,7 +24,7 @@ public class SwerveModule {
     private final CANSparkMax driveMotor;
     private final CANSparkMax turnMotor;
 
-    final RelativeEncoder turnEncoder;
+    public final RelativeEncoder turnEncoder;
     private final RelativeEncoder driveEncoder;
 
     private final CANCoder absoluteEncoder;
@@ -55,13 +56,17 @@ public class SwerveModule {
         
         driveMotor.restoreFactoryDefaults();
         turnMotor.restoreFactoryDefaults();
+
+        driveMotor.setIdleMode(IdleMode.kBrake);
+        turnMotor.setIdleMode(IdleMode.kCoast);
         
         this.encoderOffset = encoderOffset;
         startingRotation = readAngle();
         
         turnEncoder = turnMotor.getEncoder();
+        
+        turnEncoder.setPositionConversionFactor((2*Math.PI)/(150d/7d));
         turnEncoder.setPosition(startingRotation);
-        turnEncoder.setPositionConversionFactor((2*Math.PI)/(150/7));
 
         driveEncoder = driveMotor.getEncoder();
         driveEncoder.setPosition(0);
@@ -83,14 +88,7 @@ public class SwerveModule {
         this.name = name;
 
 
-        // if (!zeroed && Math.abs(readAngle()) < 0.05 ){
-        //     turnEncoder.setPosition(Math.PI/2);
-        //     zeroed = true;
-        // } 
-
         
-        turnEncoder.setPosition(readAngle() - encoderOffset);// + Math.PI/2);
-            
 
     } 
 
@@ -149,11 +147,26 @@ public class SwerveModule {
         
         double angle = absoluteEncoder.getAbsolutePosition();
 
-        return Math.toRadians(angle);
+        angle -= encoderOffset;
+
+        angle = Math.toRadians(angle);
+        
+        if (angle < 0) angle += 2 * Math.PI;
+
+        angle = 2* Math.PI - angle;
+        
+
+
+
+        return angle;
+    }
+
+    public double directReadAngleDegrees(){
+        return absoluteEncoder.getAbsolutePosition();
     }
 
     public void smartDash(){
-        SmartDashboard.putNumber(name + " real rot", turnEncoder.getPosition());
+        SmartDashboard.putNumber(name + " motor encoder", Math.toDegrees(turnEncoder.getPosition()%(2*Math.PI)));
         SmartDashboard.putNumber(name + " encoder", Math.toDegrees(readAngle()));
         //SmartDashboard.putString("errors: ", absoluteEncoder.configFactoryDefault().name());
 

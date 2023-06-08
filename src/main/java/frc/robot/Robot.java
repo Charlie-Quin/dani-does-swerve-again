@@ -41,6 +41,8 @@ public class Robot extends TimedRobot {
     
   }
 
+  boolean flag = false;
+
   @Override
   public void teleopPeriodic() {
 
@@ -48,10 +50,14 @@ public class Robot extends TimedRobot {
 
     driveSub.drive(controller.getLeftX(),controller.getLeftY(), controller.getRightX());
 
-    if (driveSub.deadBand(controller.getLeftTriggerAxis()) != 0)
-    driveSub.backLeft.turnEncoder.setPosition(driveSub.backLeft.turnEncoder.getPosition() + controller.getLeftTriggerAxis() * 0.005);
-    
-    
-
+    if (driveSub.deadBand(controller.getLeftTriggerAxis()) != 0){
+      if (!flag){
+        driveSub.tryReZero();
+        flag = true;
+      }
+    }
+    else{
+      flag = false;
+    }
   }
 }
