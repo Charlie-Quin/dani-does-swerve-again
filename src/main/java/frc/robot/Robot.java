@@ -4,15 +4,9 @@
 
 package frc.robot;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import frc.robot.subsytems.DriveSubsystem;
 
 /**
@@ -20,7 +14,6 @@ import frc.robot.subsytems.DriveSubsystem;
  * the code necessary to operate a robot with tank drive.
  */
 public class Robot extends TimedRobot {
-  private DifferentialDrive m_myRobot;
   private XboxController controller = new XboxController(0);
 
   //private final CANSparkMax m_leftMotor = new CANSparkMax(5,MotorType.kBrushless);
@@ -41,14 +34,19 @@ public class Robot extends TimedRobot {
     
   }
 
+  public void robotPeriodic(){
+    driveSub.fakePeriodic();
+  }
+
   boolean flag = false;
 
   @Override
   public void teleopPeriodic() {
 
-    driveSub.fakePeriodic();
+    //driveSub.fakePeriodic();
 
-    driveSub.drive(controller.getLeftX(),controller.getLeftY(), controller.getRightX());
+    driveSub.driveGyroCentricTurning(controller.getLeftX(),controller.getLeftY(), controller.getRightX(),controller.getRightY());
+    //driveSub.drive(controller.getLeftX(),controller.getLeftY(), controller.getRightX());
 
     if (driveSub.deadBand(controller.getLeftTriggerAxis()) != 0){
       if (!flag){

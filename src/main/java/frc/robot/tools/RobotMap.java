@@ -20,14 +20,18 @@ public class RobotMap {
 
     public static final PIDValues kModuleTurningGains = new PIDValues(1, 0.0002, 0);
     public static final PIDValues kModuleDrivingGains = new PIDValues(0.1, 0, 0);
+
+    public static boolean fieldRelative = true;
     
-    // public static double kFLEncoderOffset = -2.089131832122803; // 2.130102227645993;
-    // public static double kFREncoderOffset = -2.048314571380615;
+    
+    //works "ok"
+    //public static double kFLEncoderOffset = 218.14453125;public static double kFREncoderOffset = 297.509765625;public static double kBLEncoderOffset = 327.744140625;public static double kBREncoderOffset = 240.205078125;
+    
+    //backwards zeroes
+    //public static double kFLEncoderOffset = 37.177734375;public static double kFREncoderOffset = 121.201171875;public static double kBLEncoderOffset = 148.271484375;public static double kBREncoderOffset = 59.765625;
+    
+    public static double kFLEncoderOffset = 216.826171875;public static double kFREncoderOffset = 301.025390625;public static double kBLEncoderOffset = 327.919921875;public static double kBREncoderOffset = 240.029296875;
 
-    // public static double kBREncoderOffset = -2.545814275741577; // good
-    // public static double kBLEncoderOffset = -3.275344610214233;//2.475036426798523;this was working //4.815034538658552 - 0.198451166256656/2;
-
-    public static double kFLEncoderOffset = 218.14453125;public static double kFREncoderOffset = 297.509765625;public static double kBLEncoderOffset = 327.744140625;public static double kBREncoderOffset = 240.205078125;
     public static int kPigeonPort = 20;
 
     public static final String kDriveCANBusName = "canivore";
