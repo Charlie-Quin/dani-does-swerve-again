@@ -27,12 +27,12 @@ public class Robot extends TimedRobot {
 
     robotContainer = new RobotContainer();
     
-    CommandScheduler.getInstance().run();
+    
 
   }
 
   public void robotPeriodic(){
-    
+    CommandScheduler.getInstance().run();
   }
 
   boolean flag = false;

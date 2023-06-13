@@ -26,13 +26,13 @@ public class teleopDrive extends CommandBase {
    */
   public teleopDrive(
     DriveSubsystem subsystem, 
-    DoubleSupplier inputX, 
-    DoubleSupplier inputY, 
+    DoubleSupplier strafe, 
+    DoubleSupplier forward, 
     DoubleSupplier rotation) {
 
     driveSubsystem = subsystem;
-    translateX = inputY;
-    translateY = inputX;
+    translateX = strafe;
+    translateY = forward;
     turn = rotation;
     addRequirements(driveSubsystem);
 
@@ -44,7 +44,7 @@ public class teleopDrive extends CommandBase {
     SmartDashboard.putBoolean("this runs", true);
     SmartDashboard.putNumber("translateX", translateX.getAsDouble());
 
-    driveSubsystem.drive( translateX.getAsDouble(), translateY.getAsDouble(),turn.getAsDouble());
+    driveSubsystem.holdRotationDrive( translateX.getAsDouble(), translateY.getAsDouble(),turn.getAsDouble());
   }
 
 }
