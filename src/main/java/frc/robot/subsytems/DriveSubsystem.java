@@ -4,10 +4,10 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.SwerveModule;
+import frc.robot.mechanisms.SwerveModule;
 import frc.robot.tools.RobotMap;
 
-public class DriveSubsystem{// extends SubsystemBase{
+public class DriveSubsystem extends SubsystemBase{
 
     private final WPI_Pigeon2 gyro;
 
@@ -86,6 +86,7 @@ public class DriveSubsystem{// extends SubsystemBase{
         backLeft.turnEncoder.setPosition(backLeft.readAngle());
         backRight.turnEncoder.setPosition(backRight.readAngle());
         gyro.reset();
+        targetRotation = 0;
      }
 
      public double deadBand(double num){

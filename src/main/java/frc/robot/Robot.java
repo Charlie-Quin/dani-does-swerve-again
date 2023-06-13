@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsytems.DriveSubsystem;
 
 /**
@@ -14,48 +15,49 @@ import frc.robot.subsytems.DriveSubsystem;
  * the code necessary to operate a robot with tank drive.
  */
 public class Robot extends TimedRobot {
-  private XboxController controller = new XboxController(0);
+  
 
   //private final CANSparkMax m_leftMotor = new CANSparkMax(5,MotorType.kBrushless);
   //private final CANSparkMax m_rightMotor = new CANSparkMax(6,MotorType.kBrushless);
 
-  DriveSubsystem driveSub;
+  RobotContainer robotContainer;
 
   @Override
   public void robotInit() {
-    // We need to invert one side of the drivetrain so that positive voltages
-    // result in both sides moving forward. Depending on how your robot's
-    // gearbox is constructed, you might have to invert the left side instead.
-    //m_rightMotor.setInverted(true);
 
-    driveSub = new DriveSubsystem();
-
-    //m_myRobot = new DifferentialDrive(m_leftMotor, m_rightMotor);
+    robotContainer = new RobotContainer();
     
+    CommandScheduler.getInstance().run();
+
   }
 
   public void robotPeriodic(){
-    driveSub.fakePeriodic();
+    
   }
 
   boolean flag = false;
+
+  public void teleopInit(){
+    
+  }
 
   @Override
   public void teleopPeriodic() {
 
     //driveSub.fakePeriodic();
 
-    driveSub.driveGyroCentricTurning(controller.getLeftX(),controller.getLeftY(), controller.getRightX(),controller.getRightY());
+    //driveSub.holdRotationDrive(controller.getLeftX(),controller.getLeftY(), controller.getRightX());
     //driveSub.drive(controller.getLeftX(),controller.getLeftY(), controller.getRightX());
 
-    if (driveSub.deadBand(controller.getLeftTriggerAxis()) != 0){
-      if (!flag){
-        driveSub.tryReZero();
-        flag = true;
-      }
-    }
-    else{
-      flag = false;
-    }
+    // if (driveSub.deadBand(controller.getLeftTriggerAxis()) != 0){
+    //   if (!flag){
+    //     driveSub.tryReZero();
+    //     flag = true;
+    //   }
+    // }
+    // else{
+    //   flag = false;
+    // }
   }
+
 }

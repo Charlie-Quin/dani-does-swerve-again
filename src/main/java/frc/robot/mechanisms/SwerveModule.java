@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.mechanisms;
 
 //import com.revrobotics.AnalogInput;
 import com.revrobotics.CANSparkMax;
